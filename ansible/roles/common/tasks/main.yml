@@ -1,0 +1,24 @@
+- name: Instalar paquetes básicos
+  ansible.builtin.apt:
+    name:
+      - curl
+      - vim
+      - ca-certificates
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Quitar el hostname de las IPs de loopback
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.\d+\.\d+\s+{{ inventory_hostname }}'
+    state: absent
+
+- name: Añadir todos los nodos del clúster a /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} ANSIBLE CLUSTER"
+    block: |
+      {% for h in groups['all'] %}
+      {{ hostvars[h].ansible_host }} {{ h }}
+      {% endfor %}
