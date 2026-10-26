@@ -1,0 +1,16 @@
+---
+- name: Crear directorio de trabajo en la máquina virtual
+  file:
+    path: /opt/bigdata
+    state: directory
+    mode: '0755'
+
+- name: Copiar el docker-compose al nodo master
+  copy:
+    src: docker-compose.yml
+    dest: /opt/bigdata/docker-compose.yml
+
+- name: Levantar los contenedores con Docker Compose
+  docker_compose:
+    project_src: /opt/bigdata
+    state: present
