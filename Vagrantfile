@@ -17,6 +17,12 @@ Vagrant.configure("2") do |config|
         vb.memory = node[:memory]
         vb.cpus   = node[:cpus]
       end
+
+      n.vm.provision "ansible_local" do |ansible|
+        ansible.playbook       = "ansible/site.yml"
+        ansible.inventory_path = "ansible/inventory.ini"
+        ansible.limit          = node[:name]
+      end
     end
   end
 end
