@@ -1,3 +1,22 @@
+- name: Crear directorio de configuración de systemd-resolved
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Fijar servidores DNS IPv4
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf.d/dns.conf
+    content: |
+      [Resolve]
+      DNS=8.8.8.8 1.1.1.1
+      FallbackDNS=9.9.9.9
+    mode: "0644"
+  notify: Reiniciar systemd-resolved
+
+- name: Aplicar cambios de DNS ahora
+  ansible.builtin.meta: flush_handlers
+
 - name: Instalar paquetes básicos
   ansible.builtin.apt:
     name:
