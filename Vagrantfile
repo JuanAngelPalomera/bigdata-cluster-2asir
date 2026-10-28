@@ -20,7 +20,12 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         vb.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
       end
-
+      n.vm.provision "shell", inline: <<-SHELL
+        mkdir -p /etc/systemd/resolved.conf.d
+        printf '[Resolve]\nDNS=8.8.8.8 1.1.1.1\nFallbackDNS=9.9.9.9\n' > /etc/systemd/resolved.conf.d/dns.conf
+        systemctl restart systemd-resolved
+      SHELL
+      
       n.vm.provision "ansible_local" do |ansible|
         ansible.playbook         = "ansible/site.yml"
         ansible.inventory_path   = "ansible/inventory.ini"
