@@ -10,3 +10,9 @@
   become: true
   roles:
     - hdfs_spark
+
+- name: Desplegar nodos esclavos (Workers) de Big Data
+  hosts: workers  # (o el nombre del grupo plural que uses para los workers en tu inventario)
+  become: true
+  roles:
+    - hdfs_spark  # (o el rol específico de datanodes/workers si lo tenéis separado)
