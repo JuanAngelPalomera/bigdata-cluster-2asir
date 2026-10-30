@@ -4,3 +4,9 @@
   roles:
     - common
     - docker
+
+- name: Desplegar servicios de Big Data en el master
+  hosts: masters
+  become: true
+  roles:
+    - hdfs_spark
