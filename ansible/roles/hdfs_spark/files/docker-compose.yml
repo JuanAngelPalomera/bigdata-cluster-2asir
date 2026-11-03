@@ -25,9 +25,12 @@ services:
     container_name: datanode
     ports:
       - "50075:50075"
+      - "50010:50010"
     environment:
       - CORE_CONF_fs_defaultFS=hdfs://192.168.56.10:9000
       - HDFS_CONF_dfs_namenode_rpc-address=192.168.56.10:9000
+      - HDFS_CONF_dfs_datanode_use_datanode_hostname=false
+      - HDFS_CONF_dfs_client_use_datanode_hostname=false
 
   spark-worker:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
