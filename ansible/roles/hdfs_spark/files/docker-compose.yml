@@ -1,41 +1,43 @@
-version: '3'
-
 services:
   # --- SERVICIOS MASTER ---
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8
     container_name: namenode
-    ports:
-      - "50070:50070"
-      - "9000:9000"
+    network_mode: host
+    restart: always
     environment:
       - CLUSTER_NAME=bigdata-cluster
-      - CORE_CONF_fs_defaultFS=hdfs://192.168.56.10:9000
+      - CORE_CONF_fs_defaultFS=hdfs://master:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - namenode_data:/hadoop/dfs/name
 
   spark-master:
     image: bde2020/spark-master:2.4.0-hadoop2.7
     container_name: spark-master
-    ports:
-      - "8080:8080"
-      - "7077:7077"
+    network_mode: host
+    restart: always
 
   # --- SERVICIOS WORKER / SLAVES ---
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8
     container_name: datanode
-    ports:
-      - "50075:50075"
-      - "50010:50010"
+    network_mode: host
+    restart: always
     environment:
-      - CORE_CONF_fs_defaultFS=hdfs://192.168.56.10:9000
-      - HDFS_CONF_dfs_namenode_rpc-address=192.168.56.10:9000
-      - HDFS_CONF_dfs_datanode_use_datanode_hostname=false
-      - HDFS_CONF_dfs_client_use_datanode_hostname=false
+      - CORE_CONF_fs_defaultFS=hdfs://master:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - datanode_data:/hadoop/dfs/data
 
   spark-worker:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker
-    ports:
-      - "8081:8081"
+    network_mode: host
+    restart: always
     environment:
-      - "SPARK_MASTER=spark://192.168.56.10:7077"
+      - SPARK_MASTER=spark://master:7077
+
+volumes:
+  namenode_data:
+  datanode_data:

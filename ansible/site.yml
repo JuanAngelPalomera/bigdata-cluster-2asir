@@ -5,14 +5,22 @@
     - common
     - docker
 
-- name: Desplegar servicios de Big Data en el master
+- name: Desplegar NameNode y Spark Master en el master
   hosts: masters
   become: true
+  vars:
+    servicios:
+      - namenode
+      - spark-master
   roles:
     - hdfs_spark
 
-- name: Desplegar nodos esclavos (Workers) de Big Data
-  hosts: workers  # (o el nombre del grupo plural que uses para los workers en tu inventario)
+- name: Desplegar DataNode y Spark Worker en los workers
+  hosts: workers
   become: true
+  vars:
+    servicios:
+      - datanode
+      - spark-worker
   roles:
-    - hdfs_spark  # (o el rol específico de datanodes/workers si lo tenéis separado)
+    - hdfs_spark

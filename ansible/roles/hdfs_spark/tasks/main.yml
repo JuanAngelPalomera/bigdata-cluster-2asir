@@ -5,25 +5,14 @@
     state: directory
     mode: '0755'
 
-- name: Copiar el docker-compose al nodo master
+- name: Copiar el docker-compose
   ansible.builtin.copy:
     src: docker-compose.yml
     dest: /opt/bigdata/docker-compose.yml
+    mode: '0644'
 
-- name: Asegurar que python3-pip y dependencias de docker estén instalados
-  ansible.builtin.apt:
-    name:
-      - python3-pip
-      - python3-docker
-    state: present
-    update_cache: true
-
-- name: Instalar el paquete de python docker-compose
-  ansible.builtin.pip:
-    name: docker-compose
-    state: present
-
-- name: Levantar los contenedores de Big Data con Docker Compose
-  community.docker.docker_compose:
+- name: Levantar solo los servicios que corresponden a este nodo
+  community.docker.docker_compose_v2:
     project_src: /opt/bigdata
+    services: "{{ servicios }}"
     state: present
