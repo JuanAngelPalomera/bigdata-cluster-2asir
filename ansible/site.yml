@@ -24,3 +24,12 @@
       - spark-worker
   roles:
     - hdfs_spark
+    
+
+- name: Preparar todos los nodos
+  hosts: all
+  become: true
+  roles:
+    - common
+    - docker
+    - exportadores

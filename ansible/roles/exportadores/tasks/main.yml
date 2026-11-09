@@ -1,0 +1,16 @@
+- name: Crear directorio de los exportadores
+  ansible.builtin.file:
+    path: /opt/exportadores
+    state: directory
+    mode: "0755"
+
+- name: Copiar el docker-compose de los exportadores
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: /opt/exportadores/docker-compose.yml
+    mode: "0644"
+
+- name: Levantar node_exporter y cAdvisor
+  community.docker.docker_compose_v2:
+    project_src: /opt/exportadores
+    state: present
