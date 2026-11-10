@@ -3,7 +3,7 @@ Vagrant.configure("2") do |config|
   config.vm.boot_timeout = 600
 
   nodes = [
-    { name: "master",  ip: "192.168.56.10", memory: 2048, cpus: 2 },
+    { name: "master",  ip: "192.168.56.10", memory: 4096, cpus: 2 },
     { name: "worker1", ip: "192.168.56.11", memory: 2048, cpus: 2 },
     { name: "worker2", ip: "192.168.56.12", memory: 2048, cpus: 2 }
   ]

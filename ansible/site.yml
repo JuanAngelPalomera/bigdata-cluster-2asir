@@ -33,3 +33,14 @@
     - common
     - docker
     - exportadores
+
+- name: Desplegar NameNode y Spark Master en el master
+  hosts: masters
+  become: true
+  vars:
+    servicios:
+      - namenode
+      - spark-master
+  roles:
+    - hdfs_spark
+    - monitorizacion

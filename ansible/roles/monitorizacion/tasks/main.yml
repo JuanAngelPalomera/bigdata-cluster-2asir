@@ -1,0 +1,23 @@
+- name: Crear directorio de la pila de monitorización
+  ansible.builtin.file:
+    path: /opt/monitorizacion
+    state: directory
+    mode: "0755"
+
+- name: Copiar el docker-compose de monitorización
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: /opt/monitorizacion/docker-compose.yml
+    mode: "0644"
+
+- name: Copiar la configuración de Prometheus
+  ansible.builtin.copy:
+    src: prometheus.yml
+    dest: /opt/monitorizacion/prometheus.yml
+    mode: "0644"
+  notify: Reiniciar la pila de monitorización
+
+- name: Levantar la pila de monitorización
+  community.docker.docker_compose_v2:
+    project_src: /opt/monitorizacion
+    state: present
