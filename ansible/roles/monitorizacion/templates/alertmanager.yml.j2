@@ -1,0 +1,20 @@
+route:
+  receiver: telegram
+  group_by: ['alertname', 'job']
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 4h
+  routes:
+    - matchers:
+        - severity="critica"
+      receiver: telegram
+      repeat_interval: 1h
+
+receivers:
+  - name: telegram
+{% if telegram_bot_token %}
+    telegram_configs:
+      - bot_token: '{{ telegram_bot_token }}'
+        chat_id: {{ telegram_chat_id }}
+        send_resolved: true
+{% endif %}

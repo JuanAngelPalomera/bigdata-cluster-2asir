@@ -1,1 +1,3 @@
 grafana_admin_password: "root1234"
+telegram_bot_token: ""
+telegram_chat_id: ""

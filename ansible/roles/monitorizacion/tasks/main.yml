@@ -1,3 +1,12 @@
+- name: Cargar los secretos si existe el fichero ansible/secrets.yml
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ playbook_dir }}/secrets.yml"
+      skip: true
+  no_log: true
+
 - name: Crear directorios de la pila de monitorización
   ansible.builtin.file:
     path: "{{ item }}"
@@ -33,6 +42,14 @@
     src: alert_rules.yml
     dest: /opt/monitorizacion/alert_rules.yml
     mode: "0644"
+  notify: Reiniciar la pila de monitorización
+
+- name: Generar la configuración de Alertmanager
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /opt/monitorizacion/alertmanager.yml
+    mode: "0644"
+  no_log: true
   notify: Reiniciar la pila de monitorización
 
 - name: Copiar la configuración de json_exporter
