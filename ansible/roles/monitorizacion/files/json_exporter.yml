@@ -1,0 +1,57 @@
+modules:
+  hdfs_state:
+    metrics:
+      - name: hdfs_datanodes_vivos
+        path: '{ .beans[0].NumLiveDataNodes }'
+        help: DataNodes vivos según el NameNode
+      - name: hdfs_datanodes_muertos
+        path: '{ .beans[0].NumDeadDataNodes }'
+        help: DataNodes muertos según el NameNode
+
+  hdfs_fs:
+    metrics:
+      - name: hdfs_capacidad_total_bytes
+        path: '{ .beans[0].CapacityTotal }'
+        help: Capacidad total de HDFS
+      - name: hdfs_capacidad_usada_bytes
+        path: '{ .beans[0].CapacityUsed }'
+        help: Capacidad usada de HDFS
+      - name: hdfs_capacidad_libre_bytes
+        path: '{ .beans[0].CapacityRemaining }'
+        help: Capacidad libre de HDFS
+      - name: hdfs_bloques_subreplicados
+        path: '{ .beans[0].UnderReplicatedBlocks }'
+        help: Bloques con menos réplicas de las pedidas
+      - name: hdfs_bloques_perdidos
+        path: '{ .beans[0].MissingBlocks }'
+        help: Bloques sin ninguna réplica disponible
+
+  spark_master:
+    metrics:
+      - name: spark_workers_vivos
+        path: '{ .aliveworkers }'
+        help: Spark Workers vivos
+      - name: spark_cores_total
+        path: '{ .cores }'
+        help: Cores totales del clúster Spark
+      - name: spark_cores_usados
+        path: '{ .coresused }'
+        help: Cores en uso
+      - name: spark_app_activa
+        type: object
+        path: '{ .activeapps[*] }'
+        help: Aplicaciones Spark en ejecución
+        labels:
+          id: '{ .id }'
+          nombre: '{ .name }'
+        values:
+          activa: 1
+      - name: spark_worker
+        type: object
+        path: '{ .workers[*] }'
+        help: Estado de cada Spark Worker
+        labels:
+          host: '{ .host }'
+        values:
+          cores: '{ .cores }'
+          cores_usados: '{ .coresused }'

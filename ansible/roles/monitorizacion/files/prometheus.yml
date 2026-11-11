@@ -24,3 +24,45 @@ scrape_configs:
         labels: {nodo: worker1}
       - targets: ['192.168.56.12:8085']
         labels: {nodo: worker2}
+
+  - job_name: hdfs_estado
+    metrics_path: /probe
+    params:
+      module: [hdfs_state]
+    static_configs:
+      - targets: ['http://localhost:50070/jmx?qry=Hadoop:service=NameNode,name=FSNamesystemState']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: instance
+        replacement: master
+      - target_label: __address__
+        replacement: 192.168.56.10:7979
+
+  - job_name: hdfs_capacidad
+    metrics_path: /probe
+    params:
+      module: [hdfs_fs]
+    static_configs:
+      - targets: ['http://localhost:50070/jmx?qry=Hadoop:service=NameNode,name=FSNamesystem']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: instance
+        replacement: master
+      - target_label: __address__
+        replacement: 192.168.56.10:7979
+
+  - job_name: spark_master
+    metrics_path: /probe
+    params:
+      module: [spark_master]
+    static_configs:
+      - targets: ['http://localhost:8080/json/']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: instance
+        replacement: master
+      - target_label: __address__
+        replacement: 192.168.56.10:7979

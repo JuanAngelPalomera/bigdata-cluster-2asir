@@ -17,6 +17,13 @@
     mode: "0644"
   notify: Reiniciar la pila de monitorización
 
+- name: Copiar la configuración de json_exporter
+  ansible.builtin.copy:
+    src: json_exporter.yml
+    dest: /opt/monitorizacion/json_exporter.yml
+    mode: "0644"
+  notify: Reiniciar la pila de monitorización
+
 - name: Levantar la pila de monitorización
   community.docker.docker_compose_v2:
     project_src: /opt/monitorizacion
