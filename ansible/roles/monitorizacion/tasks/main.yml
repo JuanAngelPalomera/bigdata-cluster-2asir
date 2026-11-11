@@ -1,8 +1,12 @@
-- name: Crear directorio de la pila de monitorización
+- name: Crear directorios de la pila de monitorización
   ansible.builtin.file:
-    path: /opt/monitorizacion
+    path: "{{ item }}"
     state: directory
     mode: "0755"
+  loop:
+    - /opt/monitorizacion
+    - /opt/monitorizacion/grafana
+    - /opt/monitorizacion/grafana/dashboards
 
 - name: Copiar el docker-compose de monitorización
   ansible.builtin.copy:
@@ -10,10 +14,24 @@
     dest: /opt/monitorizacion/docker-compose.yml
     mode: "0644"
 
+- name: Generar el fichero .env con las credenciales
+  ansible.builtin.template:
+    src: env.j2
+    dest: /opt/monitorizacion/.env
+    mode: "0600"
+  no_log: true
+
 - name: Copiar la configuración de Prometheus
   ansible.builtin.copy:
     src: prometheus.yml
     dest: /opt/monitorizacion/prometheus.yml
+    mode: "0644"
+  notify: Reiniciar la pila de monitorización
+
+- name: Copiar las reglas de alerta
+  ansible.builtin.copy:
+    src: alert_rules.yml
+    dest: /opt/monitorizacion/alert_rules.yml
     mode: "0644"
   notify: Reiniciar la pila de monitorización
 
@@ -23,6 +41,20 @@
     dest: /opt/monitorizacion/json_exporter.yml
     mode: "0644"
   notify: Reiniciar la pila de monitorización
+
+- name: Copiar la provisión de Grafana
+  ansible.builtin.copy:
+    src: grafana/provisioning/
+    dest: /opt/monitorizacion/grafana/provisioning/
+    mode: "0644"
+    directory_mode: "0755"
+  notify: Reiniciar la pila de monitorización
+
+- name: Copiar el panel Clúster Big Data
+  ansible.builtin.copy:
+    src: grafana/dashboards/bigdata-cluster.json
+    dest: /opt/monitorizacion/grafana/dashboards/bigdata-cluster.json
+    mode: "0644"
 
 - name: Levantar la pila de monitorización
   community.docker.docker_compose_v2:

@@ -1,0 +1,47 @@
+groups:
+  - name: bigdata
+    rules:
+      - alert: ObjetivoCaido
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critica
+        annotations:
+          summary: "El objetivo {{ $labels.job }} en {{ $labels.instance }} no responde"
+          comprobar: "Mirar Status > Targets en Prometheus para ver el error. Si es una VM, comprobar vagrant status; si es un contenedor, docker ps -a en ese nodo."
+
+      - alert: HDFSDataNodesInsuficientes
+        expr: hdfs_datanodes_vivos < 2
+        for: 2m
+        labels:
+          severity: critica
+        annotations:
+          summary: "HDFS tiene {{ $value }} DataNodes vivos, se esperan 2"
+          comprobar: "Ver en el NameNode (puerto 50070) qué DataNode falta y mirar docker ps y docker logs datanode en ese worker."
+
+      - alert: HDFSBloquesSubreplicados
+        expr: hdfs_bloques_subreplicados > 0
+        for: 5m
+        labels:
+          severity: aviso
+        annotations:
+          summary: "HDFS tiene {{ $value }} bloques sub-replicados desde hace más de 5 minutos"
+          comprobar: "Ejecutar hdfs fsck / para localizar los ficheros afectados y comprobar que los dos DataNodes están vivos."
+
+      - alert: DiscoLlenoEn24h
+        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 24 * 3600) < 0
+        for: 30m
+        labels:
+          severity: aviso
+        annotations:
+          summary: "El disco de {{ $labels.nodo }} se llenará en menos de 24 h según la tendencia"
+          comprobar: "Ejecutar df -h y docker system df en la VM para ver qué ocupa más (imágenes, volúmenes de HDFS o logs)."
+
+      - alert: SparkWorkersInsuficientes
+        expr: spark_workers_vivos < 2
+        for: 1m
+        labels:
+          severity: aviso
+        annotations:
+          summary: "Spark tiene {{ $value }} workers vivos, se esperan 2"
+          comprobar: "Ver la interfaz del Spark Master (puerto 8080) y docker logs spark-worker en el worker que falta."
